@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPOI_Library_Excel", "NPOI_Library_Excel\NPOI_Library_Excel.csproj", "{3300D373-4A4C-4454-8E3B-0F1C919B5972}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library_Excel", "Library_Excel\Library_Excel.csproj", "{97E28619-ADE2-4A30-AB64-46D48D62CD65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{3300D373-4A4C-4454-8E3B-0F1C919B5972}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3300D373-4A4C-4454-8E3B-0F1C919B5972}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3300D373-4A4C-4454-8E3B-0F1C919B5972}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97E28619-ADE2-4A30-AB64-46D48D62CD65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97E28619-ADE2-4A30-AB64-46D48D62CD65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97E28619-ADE2-4A30-AB64-46D48D62CD65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97E28619-ADE2-4A30-AB64-46D48D62CD65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
