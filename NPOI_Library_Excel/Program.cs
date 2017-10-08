@@ -22,7 +22,7 @@ namespace NPOI_Library_Excel
                     new Sheet() {
                         NameSheet = "Test2",
                         Data = dtTest,
-                        MakeResult = (sheet) =>
+                        MakeResult = () =>
                         {
                             var rows = dtTest.Rows.Count + 5;
 
