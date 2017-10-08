@@ -42,9 +42,19 @@ namespace Library_Excel
                 MakeHeader(data, sheet);
                 MakeData(excel.Data, sheet);
                 excel.MakeResult?.Invoke();
+
+                int row = excel.Data.Rows.Count + 5;
+                IRow irow = sheet.CreateRow(row);
+                SetCellValue(irow, 2, "SUM(C1:C11)");
             }
 
             return GetBytes(workbook);
+        }
+
+        private static void SetCellValue(IRow row, int columnIndex, string formula)
+        {
+            ICell cell = row.CreateCell(columnIndex, CellType.Formula);
+            cell.SetCellFormula(formula);
         }
 
         private static byte[] GetBytes(IWorkbook workbook)
