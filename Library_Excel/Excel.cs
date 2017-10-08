@@ -1,36 +1,64 @@
 ﻿using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 
 namespace Library_Excel
 {
+    public class ExcelBook : IEnumerable
+    {
+        public List<Sheet> Book { get; set; }
+
+        public IEnumerator GetEnumerator()
+        {
+            return Book.GetEnumerator();
+        }
+    }
+    public class Sheet
+    {
+        public string NameSheet { get; set; }
+        public DataTable Data { get; set; }
+        public Action MakeResult { get; set; }
+    }
+
     public class Excel
     {
         private static ICellStyle _style;
 
         protected Excel() { }
 
-        public static byte[] WriteExcelWithNPOI(Dictionary<string, DataTable> list)
+        public static byte[] WriteExcel(ExcelBook excelProperties)
         {
-            IWorkbook workbook = new XSSFWorkbook();
-            CreateFormatDate(workbook);
+            IWorkbook workbook = Init();
 
-            foreach (KeyValuePair<string, DataTable> itemList in list)
+            foreach (Sheet excel in excelProperties)
             {
-                var nameSheet = itemList.Key;
-                var data = itemList.Value;
-                ISheet sheet = workbook.CreateSheet(nameSheet);
+                ISheet sheet = workbook.CreateSheet(excel.NameSheet);
+                var data = excel.Data;
 
                 MakeHeader(data, sheet);
-                MakeData(itemList.Value, sheet);
+                MakeData(excel.Data, sheet);
+                excel.MakeResult?.Invoke();
             }
 
+            return GetBytes(workbook);
+        }
+
+        private static byte[] GetBytes(IWorkbook workbook)
+        {
             MemoryStream memoryStream = new MemoryStream();
             workbook.Write(memoryStream);
             return memoryStream.ToArray();
+        }
+
+        private static IWorkbook Init()
+        {
+            IWorkbook workbook = new XSSFWorkbook();
+            CreateFormatDate(workbook);
+            return workbook;
         }
 
         private static void CreateFormatDate(IWorkbook workbook)
@@ -56,7 +84,7 @@ namespace Library_Excel
             }
         }
 
-        private static void SetCellValue(IRow row, int j, Type dataType, string value)
+        private static void SetCellValue(IRow row, int columnIndex, Type dataType, string value)
         {
             if (dataType == typeof(int) ||
                 dataType == typeof(long) ||
@@ -64,21 +92,21 @@ namespace Library_Excel
                 dataType == typeof(float) ||
                 dataType == typeof(double))
             {
-                ICell cell = row.CreateCell(j, CellType.Numeric);
+                ICell cell = row.CreateCell(columnIndex, CellType.Numeric);
                 double result;
                 if (double.TryParse(value, out result))
                     cell.SetCellValue(result);
             }
             else if (dataType == typeof(bool))
             {
-                ICell cell = row.CreateCell(j, CellType.Boolean);
+                ICell cell = row.CreateCell(columnIndex, CellType.Boolean);
                 bool result;
                 if (bool.TryParse(value, out result))
                     cell.SetCellValue(result);
             }
             else if (dataType == typeof(DateTime))
             {
-                ICell cell = row.CreateCell(j);
+                ICell cell = row.CreateCell(columnIndex);
                 cell.CellStyle = _style;
                 DateTime result;
                 if (DateTime.TryParse(value, out result))
@@ -86,7 +114,7 @@ namespace Library_Excel
             }
             else
             {
-                ICell cell = row.CreateCell(j, CellType.String);
+                ICell cell = row.CreateCell(columnIndex, CellType.String);
                 cell.SetCellValue(value);
             }
         }

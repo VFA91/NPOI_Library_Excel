@@ -13,14 +13,25 @@ namespace NPOI_Library_Excel
         static void Main(string[] args)
         {
             DataTable dtTest = CreateRegisters();
-
-            Dictionary<string, DataTable> list = new Dictionary<string, DataTable>()
+            
+            ExcelBook excelBook = new ExcelBook()
             {
-                { "Test1", dtTest },
-                { "Test2", dtTest }
+                Book = new List<Sheet>()
+                {
+                    new Sheet() { NameSheet = "Test1", Data = dtTest },
+                    new Sheet() {
+                        NameSheet = "Test2",
+                        Data = dtTest,
+                        MakeResult = (sheet) =>
+                        {
+                            var rows = dtTest.Rows.Count + 5;
+
+                        }
+                    }
+                }
             };
 
-            var file = Excel.WriteExcelWithNPOI(list);
+            var file = Excel.WriteExcel(excelBook);
 
             using (FileStream fs = new FileStream("C:\\Users\\Usuario\\Desktop\\output.xlsx", FileMode.Create, FileAccess.Write))
             {
