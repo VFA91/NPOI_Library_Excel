@@ -4,9 +4,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.IO;
 
-namespace Library_Excel
+namespace NNS.LIB.Cross
 {
     public class ExcelBook : IEnumerable
     {
@@ -17,18 +18,21 @@ namespace Library_Excel
             return Book.GetEnumerator();
         }
     }
+
     public class Sheet
     {
         public string NameSheet { get; set; }
         public DataTable Data { get; set; }
-        public Action MakeResult { get; set; }
     }
 
-    public class Excel
+    public class ExcelLibrary
     {
-        private static ICellStyle _style;
+        private static ICellStyle _formatDate;
+        private static XSSFCellStyle _cellStyle;
+        private static XSSFCellStyle _styleHeader;
+        private static ICellStyle _formatNumber;
 
-        protected Excel() { }
+        protected ExcelLibrary() { }
 
         public static byte[] WriteExcel(ExcelBook excelProperties)
         {
@@ -41,41 +45,22 @@ namespace Library_Excel
 
                 MakeHeader(data, sheet);
                 MakeData(excel.Data, sheet);
-                excel.MakeResult?.Invoke();
-
-                int row = excel.Data.Rows.Count + 5;
-                IRow irow = sheet.CreateRow(row);
-                SetCellValue(irow, 2, "SUM(C1:C11)");
             }
 
             return GetBytes(workbook);
         }
 
-        private static void SetCellValue(IRow row, int columnIndex, string formula)
+        private static void MakeHeader(DataTable data, ISheet sheet)
         {
-            ICell cell = row.CreateCell(columnIndex, CellType.Formula);
-            cell.SetCellFormula(formula);
-        }
+            IRow rowHeader = sheet.CreateRow(0);
 
-        private static byte[] GetBytes(IWorkbook workbook)
-        {
-            MemoryStream memoryStream = new MemoryStream();
-            workbook.Write(memoryStream);
-            return memoryStream.ToArray();
-        }
-
-        private static IWorkbook Init()
-        {
-            IWorkbook workbook = new XSSFWorkbook();
-            CreateFormatDate(workbook);
-            return workbook;
-        }
-
-        private static void CreateFormatDate(IWorkbook workbook)
-        {
-            var formatDate = workbook.CreateDataFormat();
-            _style = workbook.CreateCellStyle();
-            _style.DataFormat = formatDate.GetFormat("yyyy/MM/dd");
+            for (int j = 0; j < data.Columns.Count; j++)
+            {
+                ICell cell = rowHeader.CreateCell(j);
+                rowHeader.Cells[j].CellStyle = _styleHeader;
+                string columnName = data.Columns[j].ToString();
+                cell.SetCellValue(columnName);
+            }
         }
 
         private static void MakeData(DataTable data, ISheet sheet)
@@ -103,6 +88,7 @@ namespace Library_Excel
                 dataType == typeof(double))
             {
                 ICell cell = row.CreateCell(columnIndex, CellType.Numeric);
+                cell.CellStyle = _formatNumber;
                 double result;
                 if (double.TryParse(value, out result))
                     cell.SetCellValue(result);
@@ -110,6 +96,7 @@ namespace Library_Excel
             else if (dataType == typeof(bool))
             {
                 ICell cell = row.CreateCell(columnIndex, CellType.Boolean);
+                cell.CellStyle = _cellStyle;
                 bool result;
                 if (bool.TryParse(value, out result))
                     cell.SetCellValue(result);
@@ -117,7 +104,8 @@ namespace Library_Excel
             else if (dataType == typeof(DateTime))
             {
                 ICell cell = row.CreateCell(columnIndex);
-                cell.CellStyle = _style;
+                cell.CellStyle = _formatDate;
+                cell.CellStyle = _cellStyle;
                 DateTime result;
                 if (DateTime.TryParse(value, out result))
                     cell.SetCellValue(result);
@@ -125,20 +113,88 @@ namespace Library_Excel
             else
             {
                 ICell cell = row.CreateCell(columnIndex, CellType.String);
+                cell.CellStyle = _cellStyle;
                 cell.SetCellValue(value);
             }
         }
 
-        private static void MakeHeader(DataTable data, ISheet sheet)
+        private static IWorkbook Init()
         {
-            IRow rowHeader = sheet.CreateRow(0);
+            IWorkbook workbook = new XSSFWorkbook();
+            CreateFormatDate(workbook);
+            return workbook;
+        }
 
-            for (int j = 0; j < data.Columns.Count; j++)
-            {
-                ICell cell = rowHeader.CreateCell(j);
-                string columnName = data.Columns[j].ToString();
-                cell.SetCellValue(columnName);
-            }
+        private static void CreateFormatDate(IWorkbook workbook)
+        {
+            SetFormatDate(workbook);
+            SetFormatNumber(workbook);
+            SetRowStyle(workbook);
+            SetCellStyle(workbook);
+        }
+
+        private static void SetFormatDate(IWorkbook workbook)
+        {
+            var formatDate = workbook.CreateDataFormat();
+            _formatDate = workbook.CreateCellStyle();
+            _formatDate.DataFormat = formatDate.GetFormat("yyyyMMdd");
+
+            _formatDate.BorderTop = BorderStyle.Thin;
+            _formatDate.BorderRight = BorderStyle.Thin;
+            _formatDate.BorderBottom = BorderStyle.Thin;
+            _formatDate.BorderLeft = BorderStyle.Thin;
+        }
+
+        private static void SetFormatNumber(IWorkbook workbook)
+        {
+            var formatDate = workbook.CreateDataFormat();
+            _formatNumber = workbook.CreateCellStyle();
+            _formatNumber.DataFormat = formatDate.GetFormat("#,##0.0########");
+
+            _formatNumber.BorderTop = BorderStyle.Thin;
+            _formatNumber.BorderRight = BorderStyle.Thin;
+            _formatNumber.BorderBottom = BorderStyle.Thin;
+            _formatNumber.BorderLeft = BorderStyle.Thin;
+        }
+
+        private static void SetRowStyle(IWorkbook workbook)
+        {
+            IFont font = workbook.CreateFont();
+            font.FontHeightInPoints = 11;
+            font.Color = 1;
+            font.IsItalic = true;
+            font.IsBold = true;
+
+            _styleHeader = (XSSFCellStyle)workbook.CreateCellStyle();
+            XSSFColor colorToFill = new XSSFColor(Color.Orange);
+            _styleHeader.VerticalAlignment = VerticalAlignment.Center;
+            _styleHeader.Alignment = HorizontalAlignment.Center;
+
+            _styleHeader.BorderTop = BorderStyle.Thin;
+            _styleHeader.BorderRight = BorderStyle.Thin;
+            _styleHeader.BorderBottom = BorderStyle.Thin;
+            _styleHeader.BorderLeft = BorderStyle.Thin;
+
+            _styleHeader.SetFillForegroundColor(colorToFill);
+            _styleHeader.SetFont(font);
+            _styleHeader.FillPattern = FillPattern.SolidForeground;
+        }
+
+        private static void SetCellStyle(IWorkbook workbook)
+        {
+            _cellStyle = (XSSFCellStyle)workbook.CreateCellStyle();
+
+            _cellStyle.BorderTop = BorderStyle.Thin;
+            _cellStyle.BorderRight = BorderStyle.Thin;
+            _cellStyle.BorderBottom = BorderStyle.Thin;
+            _cellStyle.BorderLeft = BorderStyle.Thin;
+        }
+
+        private static byte[] GetBytes(IWorkbook workbook)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            workbook.Write(memoryStream);
+            return memoryStream.ToArray();
         }
     }
 }
