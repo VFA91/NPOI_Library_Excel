@@ -22,11 +22,14 @@ namespace NNS.LIB.Cross
     public class Sheet
     {
         public string NameSheet { get; set; }
-        public DataTable Data { get; set; }
+        public List<DataTable> ContentData { get; set; }
+        public int RowIndex { get; set; }
     }
 
     public class ExcelLibrary
     {
+        private const int ROWHEADER = 1;
+        private const int ROWSEPARATETABLES = 2;
         private static ICellStyle _formatDate;
         private static XSSFCellStyle _cellStyle;
         private static XSSFCellStyle _styleHeader;
@@ -41,18 +44,20 @@ namespace NNS.LIB.Cross
             foreach (Sheet excel in excelProperties)
             {
                 ISheet sheet = workbook.CreateSheet(excel.NameSheet);
-                var data = excel.Data;
 
-                MakeHeader(data, sheet);
-                MakeData(excel.Data, sheet);
+                foreach (var data in excel.ContentData)
+                {
+                    MakeHeader(data, sheet, excel.RowIndex);
+                    MakeData(data, sheet, excel);
+                }
             }
 
             return GetBytes(workbook);
         }
 
-        private static void MakeHeader(DataTable data, ISheet sheet)
+        private static void MakeHeader(DataTable data, ISheet sheet, int rowIndex)
         {
-            IRow rowHeader = sheet.CreateRow(0);
+            IRow rowHeader = sheet.CreateRow(rowIndex);
 
             for (int j = 0; j < data.Columns.Count; j++)
             {
@@ -63,11 +68,11 @@ namespace NNS.LIB.Cross
             }
         }
 
-        private static void MakeData(DataTable data, ISheet sheet)
+        private static void MakeData(DataTable data, ISheet sheet, Sheet excel)
         {
             for (int i = 0; i < data.Rows.Count; i++)
             {
-                IRow row = sheet.CreateRow(i + 1);
+                IRow row = sheet.CreateRow(i + ROWHEADER + excel.RowIndex);
 
                 for (int j = 0; j < data.Columns.Count; j++)
                 {
@@ -77,6 +82,8 @@ namespace NNS.LIB.Cross
                     SetCellValue(row, j, dataType, value);
                 }
             }
+
+            excel.RowIndex += data.Rows.Count + ROWSEPARATETABLES;
         }
 
         private static void SetCellValue(IRow row, int columnIndex, Type dataType, string value)
@@ -105,7 +112,6 @@ namespace NNS.LIB.Cross
             {
                 ICell cell = row.CreateCell(columnIndex);
                 cell.CellStyle = _formatDate;
-                cell.CellStyle = _cellStyle;
                 DateTime result;
                 if (DateTime.TryParse(value, out result))
                     cell.SetCellValue(result);

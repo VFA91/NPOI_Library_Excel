@@ -13,19 +13,28 @@ namespace NPOI_Library_Excel
         static void Main(string[] args)
         {
             DataTable dtTest = CreateRegisters();
-
+            DataTable dtTest2 = CreateRegisters2();
 
             ExcelBook excelBook = new ExcelBook()
             {
                 Book = new List<Sheet>()
                 {
-                    new Sheet() { NameSheet = "ASD", Data = dtTest }
+                    new Sheet()
+                    {
+                        NameSheet = "ASD",
+                        ContentData = new List<DataTable>()
+                                    {
+                                        dtTest, dtTest2, dtTest, dtTest2
+                                    }
+                    }
                 }
             };
 
             var file = ExcelLibrary.WriteExcel(excelBook);
 
-            using (FileStream fs = new FileStream("C:\\Users\\tp53tx\\Desktop\\output.xlsx", FileMode.Create, FileAccess.Write))
+            var path = string.Format("{0}\\output.xlsx", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+
+            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
                 fs.Write(file, 0, file.Length);
             }
@@ -52,6 +61,21 @@ namespace NPOI_Library_Excel
             dtTest.Rows.Add(4, null, null, false, null, DateTime.Now.AddYears(2));
             dtTest.Rows.Add(4, 404, null, false, "Test7", DateTime.Now.AddYears(2));
             dtTest.Rows.Add(4, 404, 900, null, "Test8", null);
+            return dtTest;
+        }
+
+        private static DataTable CreateRegisters2()
+        {
+            DataTable dtTest = new DataTable("Test2");
+            dtTest.Columns.Add(GetDataColumn("AAA", typeof(string)));
+            dtTest.Columns.Add(GetDataColumn("BBB", typeof(double)));
+            dtTest.Columns.Add(GetDataColumn("CCC", typeof(DateTime)));
+            dtTest.Columns.Add(GetDataColumn("DDD", typeof(string)));
+
+            dtTest.Rows.Add("AAA", 101, DateTime.Now, "AAA2");
+            dtTest.Rows.Add("BBB", 102, DateTime.Now.AddDays(1), null);
+            dtTest.Rows.Add("CCC", null, DateTime.Now.AddMonths(5), "CCC2");
+            dtTest.Rows.Add("DDD", 104, null, null);
             return dtTest;
         }
 
