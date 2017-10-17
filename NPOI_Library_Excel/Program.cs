@@ -51,7 +51,7 @@ namespace NPOI_Library_Excel
             dtTest.Columns.Add(GetDataColumn("Double", typeof(double)));
             dtTest.Columns.Add(GetDataColumn("Bool", typeof(bool)));
             dtTest.Columns.Add(GetDataColumn("String", typeof(string)));
-            dtTest.Columns.Add(GetDataColumn("DateTime", typeof(DateTime)));
+            dtTest.Columns.Add(GetDataColumn("DateTimeDateTimeDateTime", typeof(DateTime)));
 
             dtTest.Rows.Add(1, 100325415641, 14500.524, true, "Test1", DateTime.Now);
             dtTest.Rows.Add(2, 206565.22, 4500.214, false, "Test2", DateTime.Now.AddDays(1));

@@ -81,6 +81,7 @@ namespace NNS.LIB.Cross
                     string value = data.Rows[i][columnName].ToString();
                     SetCellValue(row, j, dataType, value);
                 }
+                sheet.AutoSizeColumn(i);
             }
 
             excel.RowIndex += data.Rows.Count + ROWSEPARATETABLES;
