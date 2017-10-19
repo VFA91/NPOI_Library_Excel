@@ -15,16 +15,14 @@ namespace NPOI_Library_Excel
             DataTable dtTest = CreateRegisters();
             DataTable dtTest2 = CreateRegisters2();
 
-            ExcelBook excelBook = new ExcelBook()
-            {
-                Book = new List<Sheet>()
+            IExcelBook excelBook = new ExcelBook(
+                new List<Sheet>()
                 {
                     new Sheet("ASD", new List<DataTable>()
                                     {
                                         dtTest, dtTest2, dtTest, dtTest2
                                     })
-                }
-            };
+                });
 
             var file = excelBook.WriteExcel();
 

@@ -5,7 +5,7 @@ namespace Library_Excel
 {
     public class Cell
     {
-        private readonly Library_Excel.CellStyle _cellStyle;
+        private readonly CellStyle _cellStyle;
 
         public Cell(IWorkbook workbook)
         {

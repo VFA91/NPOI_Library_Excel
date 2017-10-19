@@ -1,25 +1,24 @@
 ﻿using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
 namespace Library_Excel
 {
-    public class ExcelBook : IEnumerable
+    public class ExcelBook : IExcelBook
     {
-        public List<Sheet> Book { get; set; }
+        private readonly List<Sheet> _book;
 
-        public IEnumerator GetEnumerator()
+        public ExcelBook(List<Sheet> book)
         {
-            return Book.GetEnumerator();
+            _book = book;
         }
 
         public byte[] WriteExcel()
         {
             IWorkbook workbook = new XSSFWorkbook();
 
-            foreach (Sheet excel in Book)
+            foreach (Sheet excel in _book)
             {
                 excel.CreateSheet(workbook);                
             }

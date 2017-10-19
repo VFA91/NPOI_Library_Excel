@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="Cell.cs" />
     <Compile Include="CellStyle.cs" />
+    <Compile Include="IExcelBook.cs" />
     <Compile Include="Sheet.cs" />
     <Compile Include="ExcelBook.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
