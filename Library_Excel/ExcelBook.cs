@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-namespace NNS.LIB.Cross
+namespace Library_Excel
 {
     public class ExcelBook : IEnumerable
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace NNS.LIB.Cross
+namespace Library_Excel
 {
     public class Sheet
     {

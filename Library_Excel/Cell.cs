@@ -1,7 +1,7 @@
 ﻿using System;
 using NPOI.SS.UserModel;
 
-namespace NNS.LIB.Cross
+namespace Library_Excel
 {
     public class Cell
     {
@@ -9,7 +9,7 @@ namespace NNS.LIB.Cross
 
         public Cell(IWorkbook workbook)
         {
-            _cellStyle = new Library_Excel.CellStyle(workbook);
+            _cellStyle = new CellStyle(workbook);
         }
 
         public void SetCellValue(IRow row, int columnIndex, Type dataType, string value)
