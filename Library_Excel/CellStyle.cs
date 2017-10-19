@@ -5,13 +5,38 @@ namespace Library_Excel
     public class CellStyle
     {
         private readonly IWorkbook _workbook;
+        private readonly ICellStyle _formatDate;
+        private readonly ICellStyle _formatNumber;
+        private readonly ICellStyle _headerStyle;
+        private readonly ICellStyle _cellStyleFormat;
+
+        public ICellStyle FormatDate
+        {
+            get { return _formatDate; }
+        }
+        public ICellStyle FormatNumber
+        {
+            get { return _formatNumber; }
+        }
+        public ICellStyle HeaderStyle
+        {
+            get { return _headerStyle; }
+        }
+        public ICellStyle CellStyleFormat
+        {
+            get { return _cellStyleFormat; }
+        }
 
         public CellStyle(IWorkbook workbook)
         {
             _workbook = workbook;
+            _formatDate = GetFormatDate();
+            _formatNumber = GetFormatNumber();
+            _headerStyle = GetHeaderStyle();
+            _cellStyleFormat = GetCellStyle();
         }
 
-        public ICellStyle SetFormatDate()
+        private ICellStyle GetFormatDate()
         {
             var formatDate = _workbook.CreateDataFormat();
             var formatDateStyle = _workbook.CreateCellStyle();
@@ -22,7 +47,7 @@ namespace Library_Excel
             return formatDateStyle;
         }
 
-        public ICellStyle SetFormatNumber()
+        private ICellStyle GetFormatNumber()
         {
             var formatDate = _workbook.CreateDataFormat();
             var formatNumber = _workbook.CreateCellStyle();
@@ -33,7 +58,7 @@ namespace Library_Excel
             return formatNumber;
         }
 
-        public ICellStyle SetHeaderStyle()
+        private ICellStyle GetHeaderStyle()
         {
             IFont font = _workbook.CreateFont();
             font.FontHeightInPoints = 11;
@@ -53,7 +78,7 @@ namespace Library_Excel
             return styleHeader;
         }
 
-        public ICellStyle SetCellStyle()
+        private ICellStyle GetCellStyle()
         {
             var cellStyle = _workbook.CreateCellStyle();
 
