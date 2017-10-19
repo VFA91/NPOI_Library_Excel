@@ -19,18 +19,14 @@ namespace NPOI_Library_Excel
             {
                 Book = new List<Sheet>()
                 {
-                    new Sheet()
-                    {
-                        NameSheet = "ASD",
-                        ContentData = new List<DataTable>()
+                    new Sheet("ASD", new List<DataTable>()
                                     {
                                         dtTest, dtTest2, dtTest, dtTest2
-                                    }
-                    }
+                                    })
                 }
             };
 
-            var file = ExcelLibrary.WriteExcel(excelBook);
+            var file = excelBook.WriteExcel();
 
             var path = string.Format("{0}\\output.xlsx", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
 
